@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100;400;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="index.js"></script>
+  <title>Document</title>
+</head>
+<body>
+  <div class="join-modal">
+    <h3>Enter a user name</h3>
+    <div class="error" style="opacity: 0;">''</div>
+    <form class="name-input-container">
+      <input type="text" name="name" id="name" class="name">
+      <input type="submit" value="Submit" id="submit-name" class="btn-primary submit-name">
+    </form>
+  </div>
+  <main>
+    <aside>
+      <h3>Current Users</h3>
+      <div class="users-list-container">
+        <div class="users-list"></div>
+      </div>
+      <button class="btn-secondary leave-btn">Leave Chat</button>
+    </aside>
+    <div class="message-container">
+      <div class="chat-message-list-container">
+        <div class="chat-message-list"></div>
+      </div>
+      <form class="chat-input-container" autocomplete="off">
+        <input tabindex="0" type="text" name="chat-input" id="chat-input" class="chat-input">
+        <input type="submit" value="Send" class="btn-primary chat-button">
+      </form>
+    </div>
+  </main>
+  <script src="/socket.io/socket.io.js"></script>
+</body>
+</html>
