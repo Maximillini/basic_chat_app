@@ -49,8 +49,8 @@ q:before, q:after {
   --chat-me: #6b2862;
   --bg-primary: aquamarine;
   --bg-secondary: #472f9b;
-  --chat-other: royalblue;
-  --chat-other-secondary: rgb(47, 78, 170);
+  --chat-other: #FFA07A;
+  --chat-other-secondary: var(--chat-me);
 }
 
 body {
