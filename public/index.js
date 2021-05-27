@@ -1,3 +1,7 @@
+/*
+* View -------------------------------------------------------------------------------------
+*/
+
 const chatForm = document.querySelector('form.chat-input-container');
 const chatApp = document.querySelector('main');
 const chatMessageListContainer = document.querySelector('.chat-message-list-container');
@@ -14,7 +18,83 @@ let currentUser;
 const validations = {
   existing: 'Username already exists, please choose a different one',
   empty: 'Name cannot be blank'
-}
+};
+
+const show = (selector, display='block') => document.querySelector(selector).style.display = display;
+const hide = selector => document.querySelector(selector).style.display = 'none';
+
+const updateErrorMessage = (err) => errorMessage.innerText = err;
+
+const createChatBubbleContainer = (sender) => {
+  const div = document.createElement('div');
+  const senderClass = getSenderClass(sender);
+
+  div.classList.add('chat-bubble-container', senderClass);
+
+  const senderDisplay = sender === currentUser ? 'You' : sender;
+
+  div.innerHTML = `
+    <div class="chat-bubble"></div>
+    <small>
+      <span class="sender">${senderDisplay}</span>
+      <span class="time">${new Date().toLocaleTimeString()}</span>
+    </small>
+  `
+  
+  return div;
+};
+
+const getSenderClass = (sender) => {
+  if (sender === currentUser) return 'me';
+  if (sender === 'Admin') return 'admin';
+  return 'other-user';
+};
+
+const getNameFromList = name => document.querySelector(`[data-username="${name}"]`);
+
+const getLatestChat = () => {
+  const chatBubbles = document.querySelectorAll('.chat-bubble-container');
+  const latestChat = chatBubbles[chatBubbles.length - 1];
+
+  return latestChat;
+};
+
+const pushMessage = (data) => {
+  const chatBubbleContainer = createChatBubbleContainer(data.user);
+  chatBubbleContainer.firstElementChild.innerText = data.msg;
+
+  chatMessageList.appendChild(chatBubbleContainer);
+  smoothScrollToBottom();
+};
+
+const smoothScrollToBottom = () => {
+  const latestChat = getLatestChat();
+
+  chatMessageListContainer.scrollTo({ top: latestChat.offsetTop, behavior: 'smooth' });
+};
+
+const renderUserList = (currentUsers=[]) => {
+  if (currentUsers.length === 0) return;
+
+  usersList.replaceChildren();
+  let nameDiv;
+
+  currentUsers.forEach((user) => {
+    nameDiv = document.createElement('div');
+    nameDiv.classList.add('username');
+    nameDiv.setAttribute('data-username', user);
+    nameDiv.innerText = user;
+    usersList.appendChild(nameDiv);
+  });
+};
+
+/*
+* End View ---------------------------------------------------------------------------------
+*/
+
+/*
+* Event Listeners --------------------------------------------------------------------------
+*/
 
 nameSubmitBtn.addEventListener('click', (e) => {
   e.preventDefault();
@@ -40,16 +120,6 @@ nameSubmitBtn.addEventListener('click', (e) => {
   show('main', 'flex');
 });
 
-socket.on('register user', activeUsers => {
-  const data = {
-    user: 'Admin',
-    msg: `${activeUsers[activeUsers.length - 1]} has joined`
-  };
-
-  renderUserList(activeUsers);
-  pushMessage(data);
-});
-
 nameField.addEventListener('keyup', (e) => {
   if (e.key === 'Enter') return;
 
@@ -65,14 +135,6 @@ chatForm.addEventListener('submit', (e) => {
   textInput.value = '';
 });
 
-socket.on('chat message', data => pushMessage(data));
-
-const smoothScrollToBottom = () => {
-  const latestChat = getLatestChat();
-  
-  chatMessageListContainer.scrollTo({ top: latestChat.offsetTop, behavior: 'smooth' });
-};
-
 leaveBtn.addEventListener('click', (e) => {
   e.preventDefault();
   
@@ -80,6 +142,28 @@ leaveBtn.addEventListener('click', (e) => {
   hide('main');
   show('.join-modal');
 });
+
+
+/*
+* End Event Listeners ----------------------------------------------------------------------
+*/
+
+
+/*
+* Controller -------------------------------------------------------------------------------
+*/
+
+socket.on('register user', activeUsers => {
+  const data = {
+    user: 'Admin',
+    msg: `${activeUsers[activeUsers.length - 1]} has joined`
+  };
+
+  renderUserList(activeUsers);
+  pushMessage(data);
+});
+
+socket.on('chat message', data => pushMessage(data));
 
 socket.on('leave chat', (activeUsers, leavingUser) => {
   const data = {
@@ -90,61 +174,6 @@ socket.on('leave chat', (activeUsers, leavingUser) => {
   renderUserList(activeUsers);
 });
 
-const renderUserList = (currentUsers=[]) => {
-  if (currentUsers.length === 0) return;
-
-  usersList.replaceChildren();
-  let nameDiv;
-
-  currentUsers.forEach((user) => {
-    nameDiv = document.createElement('div');
-    nameDiv.classList.add('username');
-    nameDiv.setAttribute('data-username', user);
-    nameDiv.innerText = user;
-    usersList.appendChild(nameDiv);
-  });
-};
-
-const pushMessage = (data) => {
-  const chatBubbleContainer = createChatBubbleContainer(data.user);
-  chatBubbleContainer.firstElementChild.innerText = data.msg;
-
-  chatMessageList.appendChild(chatBubbleContainer);
-  smoothScrollToBottom();
-};
-
-const getNameFromList = name => document.querySelector(`[data-username="${name}"]`);
-
-const createChatBubbleContainer = (sender) => {
-  const div = document.createElement('div');
-  const senderClass = getSenderClass(sender);
-  div.classList.add('chat-bubble-container', senderClass);
-  const senderDisplay = sender === currentUser ? 'You' : sender;
-  div.innerHTML = `
-    <div class="chat-bubble"></div>
-    <small>
-      <span class="sender">${senderDisplay}</span>
-      <span class="time">${new Date().toLocaleTimeString()}</span>
-    </small>
-  `
-
-  return div;
-};
-
-const getSenderClass = (sender) => {
-  if (sender === currentUser) return 'me';
-  if (sender === 'Admin') return 'admin';
-  return 'other-user';
-};
-
-const getLatestChat = () => {
-  const chatBubbles = document.querySelectorAll('.chat-bubble-container');
-  const latestChat = chatBubbles[chatBubbles.length - 1];
-
-  return latestChat;
-};
-
-const updateErrorMessage = (err) => errorMessage.innerText = err;
-
-const show = (selector, display='block') => document.querySelector(selector).style.display = display;
-const hide = selector => document.querySelector(selector).style.display = 'none';
+/*
+* End Controller ---------------------------------------------------------------------------
+*/
