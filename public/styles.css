@@ -124,6 +124,7 @@ aside {
   color: white;
   flex: 1 1 20%;
   padding: 1em;
+  max-width: 20%;
 }
 
 aside h3 {
@@ -133,6 +134,7 @@ aside h3 {
 
 aside .users-list-container {
   padding: 1em;
+  overflow-wrap: break-word;
 }
 
 .username {
