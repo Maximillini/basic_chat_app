@@ -12,7 +12,6 @@ const nameSubmitBtn = document.getElementById('submit-name');
 const errorMessage = document.querySelector('.error');
 const usersList = document.querySelector('.users-list');
 const leaveBtn = document.querySelector('.leave-btn');
-const socket = io();
 let currentUser;
 
 const validations = {
@@ -142,7 +141,6 @@ leaveBtn.addEventListener('click', (e) => {
   hide('main');
   show('.join-modal');
 });
-
 
 /*
 * End Event Listeners ----------------------------------------------------------------------

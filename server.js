@@ -16,35 +16,24 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
   console.log('connection established...');
   
-  socket.on('disconnect', () => {
-    handleLeaveChat(socket, io);
-  });
+  socket.on('disconnect', () => handleLeaveChat(socket, io));
+  socket.on('leave chat', () => handleLeaveChat(socket, io));
 
-  socket.on('leave chat', () => {
-    handleLeaveChat(socket, io);
-  });
-
-  
   socket.on('register user', (name) => {
     if (normalizedUsersList().includes(name.toLowerCase())) {
       return socket.emit('validation error', 'existing');
     }
+
     console.log(`${name} has joined!`);
+
     activeUsers[socket.id] = name;
-    console.log(Object.values(activeUsers));
     io.emit('register user', Object.values(activeUsers));
   });
 
-  socket.on('chat message', (msg) => {
-    console.log(`${activeUsers[socket.id]} says: ${msg}`);
-    
-    io.emit('chat message', {user: activeUsers[socket.id], msg});
-  });
+  socket.on('chat message', msg => io.emit('chat message', {user: activeUsers[socket.id], msg}));
 });
 
-server.listen(process.env.PORT || 5000, () => {
-  console.log('listening on *:5000');
-});
+server.listen(process.env.PORT || 5000, () => console.log('listening on *:5000'));
 
 const normalizedUsersList = () => Object.values(activeUsers).map((user) => user.toLowerCase()) ?? [];
 
